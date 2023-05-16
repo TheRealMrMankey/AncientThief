@@ -2,26 +2,40 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
-using TMPro;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
 
 #region Variables
     public int lives;
-    public int points;
     public float timeToMove= 0.2f; // Movement speed ( Lower value = faster )
     public bool isMoving; // Making sure the player only does 1 movement at a time
     private bool hasWall;
     private Vector2 origPos, targetPos;
     private Vector2 spawnPos;
+    private Animator anim;
+    private SpriteRenderer character;
+    public GameObject[] heartsUI;
+    private GameManager gameManager;
+    public GameObject gameOverScreen;
 #endregion
 
 #region  Start and Update
     void Start()
     {
-        points = 0;
+        // Making sure the UI starts with all hearts
+        for(int i = 0; i < heartsUI.Length; i++) 
+        {
+            heartsUI[i].SetActive(true);
+        }
+
         spawnPos = transform.position;
+        gameOverScreen.SetActive(false);
+
+        gameManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>();
+        anim = GetComponentInChildren<Animator>();
+        character = GetComponentInChildren<SpriteRenderer>();
     }
 
     void Update()
@@ -32,6 +46,12 @@ public class PlayerController : MonoBehaviour
         // If the player runs out of lives, game over
         if(lives <= 0)
             GameOver();
+
+        // Animation
+        if(isMoving == true)
+            anim.SetBool("isMoving", true);
+        else
+            anim.SetBool("isMoving", false);
     }
 #endregion
 
@@ -81,6 +101,12 @@ public class PlayerController : MonoBehaviour
 
             float elapsedTime = 0;
 
+            // Make the character look the direction it's facing
+            if(direction == Vector2.right)
+                character.flipX = true;
+            else if(direction == Vector2.left)
+                character.flipX = false;
+
             // Grab initial position and target position
             origPos = transform.position;
             targetPos = origPos + direction;
@@ -123,7 +149,7 @@ public class PlayerController : MonoBehaviour
         
         if(other.transform.tag == "Points")
         {
-            points++;
+            gameManager.coinsAmount++;
 
             // Get the tilemap and grid for the collision
             Tilemap tilemap = other.transform.GetComponent<Tilemap>();
@@ -142,13 +168,23 @@ public class PlayerController : MonoBehaviour
         }                 
     }
 
-#endregion
+    void OnTriggerEnter2D(Collider2D collision)
+    {
+        if(collision.tag == "Exit")
+            gameManager.LoadNextLevel();
+    }
 
-#region Death and GameOver
+    #endregion
+
+    #region Death and GameOver
     void Death()
     {
         isMoving = false;
         StopAllCoroutines();
+
+        // Remove 1 Heart from the UI
+        heartsUI[lives-1].SetActive(false);
+
         // Put the player in the beggining of the level, and remove 1 life
         transform.position = spawnPos;
         lives --;
@@ -157,7 +193,21 @@ public class PlayerController : MonoBehaviour
     void GameOver()
     {
         Debug.Log("Game Over");
+        gameOverScreen.SetActive(true);
     }
-#endregion
+
+    public void RerstartLevel()
+    {
+        // Reset the level
+        SceneManager.LoadSceneAsync(SceneManager.GetActiveScene().name);
+    }
+
+    public void Menu()
+    {
+        // Go Back to Main Menu
+        SceneManager.LoadSceneAsync("Menu");
+    }
+
+    #endregion
 
 }
