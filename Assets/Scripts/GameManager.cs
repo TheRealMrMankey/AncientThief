@@ -6,22 +6,26 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
+
+#region Variables
     public TMP_Text timeSecTxt;
     private int timeSec;
     public TMP_Text timeMinTxt;
     private int timeMin;
-    public TMP_Text coinsAmountTxt;
-    public int coinsAmount;
+    public TMP_Text crystalsAmountTxt;
+    public int crystalsAmount;
     public GameObject gate;
-    public TMP_Text coinsNeededTxt;
-    public int coinsNeeded;
+    public TMP_Text crystalsNeededTxt;
+    public int crystalsNeeded;
     public int currentLvl;
+    #endregion
 
+#region Start and Update
     void Start()
     {
         timeSec = 0;
         timeMin = 0;
-        coinsAmount = 0;
+        crystalsAmount = 0;
 
         gate.SetActive(true);
 
@@ -31,14 +35,14 @@ public class GameManager : MonoBehaviour
     void Update()
     {
         // If the player gets all the coins, open the exit gate
-        if(coinsAmount == coinsNeeded) 
+        if(crystalsAmount == crystalsNeeded) 
             gate.SetActive(false);
         
         // Set the ui texts values
         timeSecTxt.SetText(timeSec.ToString());
         timeMinTxt.SetText(timeMin.ToString());
-        coinsAmountTxt.SetText(coinsAmount.ToString());
-        coinsNeededTxt.SetText(coinsNeeded.ToString());
+        crystalsAmountTxt.SetText(crystalsAmount.ToString());
+        crystalsNeededTxt.SetText(crystalsNeeded.ToString());
 
         // 60 seconds -> 1 minute
         if (timeSec == 60)
@@ -47,7 +51,9 @@ public class GameManager : MonoBehaviour
             timeSec = 0;
         }
     }
+    #endregion
 
+#region Timer
     // Count seconds
     private IEnumerator time()
     {
@@ -57,7 +63,9 @@ public class GameManager : MonoBehaviour
             yield return new WaitForSeconds(1);
         }
     }
+    #endregion
 
+#region Scene Managment
     // Load next level or main menu if there are no more levels
     public void LoadNextLevel()
     {
@@ -67,4 +75,6 @@ public class GameManager : MonoBehaviour
         else
             SceneManager.LoadSceneAsync("Menu");
     }
+#endregion
+
 }

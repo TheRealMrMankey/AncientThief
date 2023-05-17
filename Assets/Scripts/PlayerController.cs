@@ -149,7 +149,7 @@ public class PlayerController : MonoBehaviour
         
         if(other.transform.tag == "Points")
         {
-            gameManager.coinsAmount++;
+            gameManager.crystalsAmount++;
 
             // Get the tilemap and grid for the collision
             Tilemap tilemap = other.transform.GetComponent<Tilemap>();
@@ -176,7 +176,7 @@ public class PlayerController : MonoBehaviour
 
     #endregion
 
-    #region Death and GameOver
+#region Death and GameOver
     void Death()
     {
         isMoving = false;

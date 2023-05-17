@@ -5,6 +5,8 @@ using UnityEngine.SceneManagement;
 
 public class MainMenu : MonoBehaviour
 {
+
+#region Buttons
     public void Play()
     {
         SceneManager.LoadSceneAsync("Tutorial Level");
@@ -14,4 +16,6 @@ public class MainMenu : MonoBehaviour
     {
         Application.Quit();
     }
+#endregion
+
 }
